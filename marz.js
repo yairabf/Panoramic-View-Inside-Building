@@ -297,7 +297,10 @@ const main = remote.require("./main.js");
 
     // Create image element.
     var icon = document.createElement('button');
+    
     icon.classList.add('keyboardItem');
+    icon.classList.add('btn-circle');
+    icon.classList.add('btn-lg');
     icon.innerText = element.target;
     // Add click event handler.
     wrapper.addEventListener('click', function () {
