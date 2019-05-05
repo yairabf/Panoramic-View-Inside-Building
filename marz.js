@@ -296,23 +296,9 @@ const main = remote.require("./main.js");
     //wrapper.setAttribute("role", "button;");
 
     // Create image element.
-    var icon = document.createElement('img');
+    var icon = document.createElement('button');
     icon.classList.add('keyboardItem');
-    switch (index) {
-      case 0:
-        icon.src = 'img/up.png';
-        break;
-      case 1:
-        icon.src = 'img/down.png';
-        break;
-      case 2:
-        icon.src = 'img/left.png';
-        break;
-      case 3:
-        icon.src = 'img/right.png';
-        break;
-    }
-
+    icon.innerText = element.target;
     // Add click event handler.
     wrapper.addEventListener('click', function () {
       switchScene(findSceneById(element.target));
