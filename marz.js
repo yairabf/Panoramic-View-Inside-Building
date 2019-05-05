@@ -32,12 +32,10 @@ const main = remote.require("./main.js");
   var sceneListToggleElement = document.querySelector('#sceneListToggle');
   var autorotateToggleElement = document.querySelector('#autorotateToggle');
   var fullscreenToggleElement = document.querySelector('#fullscreenToggle');
+  var keyboardPlace = document.getElementById("keyboardPlace");
   var mapContainer = document.getElementById( 'mapContainer' )
-  var mapText = document.createElement('p');
-  mapText.setAttribute("id", "mapText");
-  mapText.innerText = "SHOW\nMAP"
+  var mapText = document.getElementById('mapText');
 
-  debugger;
   console.log(data.scenes);
   for (let i = 0; i < data.scenes.length; i++) {
     var sceneList = document.getElementById('scenes');
@@ -45,7 +43,6 @@ const main = remote.require("./main.js");
     aScene.setAttribute("class", "scene");
     aScene.setAttribute("data-id", i);
     aScene.setAttribute("href", "#");
-    debugger
     var liScence = document.createElement('li');
     liScence.setAttribute("class", "text");
     liScence.innerHTML = i;
@@ -99,7 +96,6 @@ const main = remote.require("./main.js");
     //   { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
     // var geometry = new Marzipano.CubeGeometry(data.levels);
 
-    debugger;
     var source = Marzipano.ImageUrlSource.fromString(
       urlPrefix + data.id + ".JPG");
     //  { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
@@ -174,27 +170,27 @@ const main = remote.require("./main.js");
   });
 
   mapContainer.addEventListener( 'click', function() {
-    debugger;
     var arrow = document.getElementById( 'arrow' );
     var arrowDiv = document.getElementById( 'arrowDiv' );
     var map = document.getElementById( 'mapImage' );
-    if (this.style.width == '50px' || this.style.width == '') {
-      this.style.width = '450px';
-      arrow.src = "img/right.png";
+    if (this.style.height == '50px' || this.style.height == '') {
+      this.style.height = '500px';
+      arrow.src = "img/down.png";
       arrow.style.maxHeight = "30px";
       arrow.style.maxWidth = "30px";
-      arrowDiv.removeChild(mapText);
+      mapText.innerText = "HIDE\nMAP";
       map.style.display = "";
     } else {
-      this.style.width = '50px';
-      arrow.src = "img/left.png";
+      this.style.height = '50px';
+      arrow.src = "img/up.png";
       arrow.style.maxHeight = "100%";
       arrow.style.maxWidth = "100%";
-      arrowDiv.appendChild(mapText);
+      mapText.innerText = "SHOW\nMAP";
       map.style.display = "none";
 
     }
  }, false );
+ mapContainer.click();
 
   // DOM elements for view controls.
   // var viewUpElement = document.querySelector('#viewUp');
@@ -222,10 +218,9 @@ const main = remote.require("./main.js");
   }
 
   function switchScene(scene) {
-    debugger;
-    var keyboard = document.getElementById("keyboardPlace");
-    if (keyboard.childNodes.length > 0) {
-      keyboard.removeChild(keyboard.childNodes[0]);
+    keyboardList = document.getElementById("keyboardList");
+    if (keyboardList != null) {
+      keyboardPlace.removeChild(keyboardList);
     }
     stopAutorotate();
     //scene.view.setParameters(scene.data.initialViewParameters);
@@ -233,18 +228,17 @@ const main = remote.require("./main.js");
     startAutorotate();
     updateSceneName(scene);
     updateSceneList(scene);
-    debugger;
     var keyboardList = document.createElement("ul");
     listOfLinkHotspots[scene.data.index].forEach((element, index) => {
       keyboardList.appendChild(createKeyboardElement(element, index));
     });
 
     keyboardList.setAttribute("id", "keyboardList");
-    keyboard.appendChild(keyboardList);
+    keyboardPlace.appendChild(keyboardList);
   }
 
   function updateSceneName(scene) {
-    sceneNameElement.innerHTML = sanitize(scene.data.name);
+    sceneNameElement.innerHTML = "Current Scene " + sanitize(scene.data.name);
   }
 
   function updateSceneList(scene) {
@@ -297,7 +291,6 @@ const main = remote.require("./main.js");
   }
 
   function createKeyboardElement(element, index) {
-    debugger;
     // Create wrapper element to hold icon and tooltip.
     var wrapper = document.createElement('li');
     //wrapper.setAttribute("role", "button;");

@@ -12,7 +12,6 @@ const rimraf = require("rimraf");
 
 document.getElementById('select-file').addEventListener('click', function () {
     dialog.showOpenDialog(function (fileNames) {
-        debugger;
         if (fileNames === undefined) {
             console.log("No file selected");
         } else {
@@ -31,10 +30,7 @@ document.getElementById('select-file').addEventListener('click', function () {
             console.log(scenes);
 
             files = fs.readdirSync(uploadFolder);
-            debugger;
-            // files.shift();
             scenes.forEach(scene => {
-                debugger;
                 var minTime = scene.end - scene.start;
                 var dest = __dirname + "/tiles/";
                 let fileToTile = filterImages(files, scene, minTime);
@@ -45,8 +41,6 @@ document.getElementById('select-file').addEventListener('click', function () {
                 }
                 fs.renameSync(fileToTile, dest + scene.id + ".JPG");
             });
-
-            debugger;
 
             var APP_DATA = {
                 "scenes": [],
@@ -69,7 +63,6 @@ document.getElementById('select-file').addEventListener('click', function () {
                 };
                 APP_DATA.scenes.push(dataScene);
             }
-            debugger;
             var deleteFiles = fs.readdirSync(uploadFolder);
             for (let i = 0; i < deleteFiles.length; i++) {
                 fs.unlinkSync(uploadFolder + deleteFiles[i]);
@@ -82,7 +75,6 @@ document.getElementById('select-file').addEventListener('click', function () {
 }, false);
 
 function filterImages(files, scene, minTime) {
-    debugger;
     var fileToTile = "";
     var fileToRemocw = "";
     for (var i = 0; i < files.length; i++) {
