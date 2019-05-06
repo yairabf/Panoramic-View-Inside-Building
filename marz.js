@@ -173,21 +173,26 @@ const main = remote.require("./main.js");
     var arrow = document.getElementById( 'arrow' );
     var arrowDiv = document.getElementById( 'arrowDiv' );
     var map = document.getElementById( 'mapImage' );
-    if (this.style.height == '50px' || this.style.height == '') {
+    if (this.style.height == '60px' || this.style.height == '') {
+      arrowDiv.style.backgroundColor="rgba(58,68,84,0.8)";
       this.style.height = '500px';
       arrow.src = "img/down.png";
       arrow.style.maxHeight = "30px";
       arrow.style.maxWidth = "30px";
-      mapText.innerText = "HIDE\nMAP";
+      arrow.style.marginLeft="35%";
+      mapText.innerText = "HIDE MAP";
+      mapText.style.margin = "7px";
       map.style.display = "";
     } else {
-      this.style.height = '50px';
+      this.style.height = '60px';
       arrow.src = "img/up.png";
       arrow.style.maxHeight = "100%";
       arrow.style.maxWidth = "100%";
+      arrow.style.marginLeft="0%";
       mapText.innerText = "SHOW\nMAP";
+      mapText.style.margin = "13px";
       map.style.display = "none";
-
+      arrowDiv.style.backgroundColor="";
     }
  }, false );
  mapContainer.click();
@@ -299,8 +304,7 @@ const main = remote.require("./main.js");
     var icon = document.createElement('button');
     
     icon.classList.add('keyboardItem');
-    icon.classList.add('btn-circle');
-    icon.classList.add('btn-lg');
+    icon.classList.add('btn', 'btn-default','btn-circle', 'btn-lg');
     icon.innerText = element.target;
     // Add click event handler.
     wrapper.addEventListener('click', function () {
