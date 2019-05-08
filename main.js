@@ -2,12 +2,13 @@ const electron = require('electron');
 const url = require('url');
 const path = require('path');
 const {app, BrowserWindow} = electron;
+const PAGES_FOLDER = __dirname;
 
 var mainWindow = null;
 app.on('ready', function(){
     mainWindow = new BrowserWindow({});
     mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'mainWindow.html'),
+        pathname: path.join(PAGES_FOLDER, 'mainWindow.html'),
         protocol:'file',
         slashes: true
     }));
@@ -16,7 +17,7 @@ app.on('ready', function(){
 
 exports.openWindow = (page) => {
     mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, page+'.html'),
+        pathname: path.join(PAGES_FOLDER, page+'.html'),
         protocol:'file',
         slashes: true
     }));
