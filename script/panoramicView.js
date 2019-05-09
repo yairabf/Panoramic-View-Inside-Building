@@ -33,8 +33,9 @@ const main = remote.require("./main.js");
   var autorotateToggleElement = document.querySelector('#autorotateToggle');
   var fullscreenToggleElement = document.querySelector('#fullscreenToggle');
   var keyboardPlace = document.getElementById("keyboardPlace");
-  var mapContainer = document.getElementById( 'mapContainer' )
+  var mapContainer = document.getElementById('mapContainer')
   var mapText = document.getElementById('mapText');
+  var mainPageButton = document.getElementById('backToMainPage');
 
   console.log(data.scenes);
   for (let i = 0; i < data.scenes.length; i++) {
@@ -167,17 +168,23 @@ const main = remote.require("./main.js");
     });
   });
 
-  mapContainer.addEventListener( 'click', function() {
-    var arrow = document.getElementById( 'arrow' );
-    var arrowDiv = document.getElementById( 'arrowDiv' );
-    var map = document.getElementById( 'mapImage' );
+  mainPageButton.addEventListener('click', function () {
+    let win = remote.getCurrentWindow();
+    main.openWindow("mainWindow");
+  });
+
+
+  mapContainer.addEventListener('click', function () {
+    var arrow = document.getElementById('arrow');
+    var arrowDiv = document.getElementById('arrowDiv');
+    var map = document.getElementById('mapImage');
     if (this.style.height == '60px' || this.style.height == '') {
-      arrowDiv.style.backgroundColor="rgba(58,68,84,0.8)";
+      arrowDiv.style.backgroundColor = "rgba(58,68,84,0.8)";
       this.style.height = '500px';
       arrow.src = "img/down.png";
       arrow.style.maxHeight = "30px";
       arrow.style.maxWidth = "30px";
-      arrow.style.marginLeft="35%";
+      arrow.style.marginLeft = "35%";
       mapText.innerText = "HIDE MAP";
       mapText.style.margin = "7px";
       map.style.display = "";
@@ -186,14 +193,14 @@ const main = remote.require("./main.js");
       arrow.src = "img/up.png";
       arrow.style.maxHeight = "100%";
       arrow.style.maxWidth = "100%";
-      arrow.style.marginLeft="0%";
+      arrow.style.marginLeft = "0%";
       mapText.innerText = "SHOW\nMAP";
       mapText.style.margin = "13px";
       map.style.display = "none";
-      arrowDiv.style.backgroundColor="";
+      arrowDiv.style.backgroundColor = "";
     }
- }, false );
- mapContainer.click();
+  }, false);
+  mapContainer.click();
 
   var velocity = 0.7;
   var friction = 3;
@@ -283,9 +290,9 @@ const main = remote.require("./main.js");
 
     // Create image element.
     var icon = document.createElement('button');
-    
+
     icon.classList.add('keyboardItem');
-    icon.classList.add('btn', 'btn-default','btn-circle', 'btn-lg');
+    icon.classList.add('btn', 'btn-default', 'btn-circle', 'btn-lg');
     icon.innerText = element.target;
     // Add click event handler.
     wrapper.addEventListener('click', function () {
