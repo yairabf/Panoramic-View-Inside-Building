@@ -19,15 +19,20 @@
     <div id="pano"></div>
     <div id="mainPageContent">
         <div>
-            <h1>Welcome to 360 building view</h1>
-            Create a zip file containing the following:
-            <ul>
-                <li>The 360 panoramic pictures you took using the mobile app and the 360 camera.</li>
-                <li>The info.json file created by the mobile app.</li>
-                <li>The map.JPEG file created by the mobile app.</li>
-                <br>
-            </ul>
-            ** note that the map file must be a .JPEG file and the zip file must not contain a folder that contains all those file. **
+            <h1>Welcome to 360 panoramic building view</h1>
+            <div id="instructionsDiv">
+                <h2>instructions</h2>
+                <div id="instructionsText">
+                Create a zip file containing the following:
+                <ul>
+                    <li>The 360 panoramic pictures you took using the mobile app and the 360 camera.</li>
+                    <li>The info.json file created by the mobile app.</li>
+                    <li>The map.JPEG file created by the mobile app.</li>
+                    <br>
+                </ul>
+                ** note that the map file must be a .JPEG file and the zip file must not contain a folder that contains all those file. **
+            </div>
+            </div>
             <h2>Please choose an option</h2>
             <form action="" id="optionDiv">
                 <div class="modeDiv">
@@ -36,7 +41,7 @@
                         <input type="radio" class="myRadio" name="myRadio" value="Quick mode" id="quickOpt">
                     </div>
                     <div class="modeInfo">
-                        <p>Creating the view from your last pictures you took in each picturing point.</p>
+                        <p class="optionText">Creating the view from your last pictures you took in each picturing point.</p>
                     </div>
                 </div>
                 <div class="modeDiv">
@@ -45,14 +50,15 @@
                         <input type="radio" class="myRadio" name="myRadio" value="Custom mode" id="customOpt">
                     </div>
                     <div class="modeInfo">
-                        <p>After uploading the panoramic pictures, you will be able to choose your pictures for each view.</p>
+                        <p class="optionText">After uploading the panoramic pictures, you will be able to choose your pictures for each view.</p>
                     </div>
                 </div>
             </form>
+
             <div id="uploadZip" style="display: block;">
                 <div style="text-align:center;">
                     <input type="text" placeholder="Please select a file" id="actual-file" disabled="disabled" />
-                    <input type="button" value="Choose a file" id="select-file" disabled/>
+                    <input type="button" value="Upload Zip" id="select-file" disabled/>
                 </div>
             </div>
         </div>

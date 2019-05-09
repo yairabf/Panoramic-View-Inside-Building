@@ -4,46 +4,53 @@ const main = remote.require("./main.js");
 const fs = require('fs');
 const path = require('path');
 const extract = require('extract-zip');
+const rimraf = require("rimraf");
+
 const UPLOAD_FOLDER = __dirname + "/uploads/";
 const DATA_FOLDER = __dirname + "/data/";
 
-const rimraf = require("rimraf");
 const QUICk_OPTION = document.getElementById('quickOpt');
 const CUSTOM_OPTION = document.getElementById('customOpt');
 const OPTION_DIV = document.getElementById('optionDiv');
 const UPLOAD_BUTTON = document.getElementById('select-file');
 
-var panoElement = document.querySelector('#pano');
-var viewerOpts = {
-    controls: {
-        mouseViewMode: "drag"
-    }
-};
-var viewer = new Marzipano.Viewer(panoElement, viewerOpts);
 
-var source = Marzipano.ImageUrlSource.fromString("img/background.jpg");
-//  { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
-var geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
+const createBackground = () => {
+    let panoElement = document.querySelector('#pano');
+    let viewerOpts = {
+        controls: {
+            mouseViewMode: "drag"
+        }
+    };
+    let viewer = new Marzipano.Viewer(panoElement, viewerOpts);
 
-var limiter = Marzipano.RectilinearView.limit.traditional(1448, 100 * Math.PI / 180, 120 * Math.PI / 180);
-var view = new Marzipano.RectilinearView(null, limiter);
+    let source = Marzipano.ImageUrlSource.fromString("img/background.jpg");
+    //  { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
+    let geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
 
-var scene = viewer.createScene({
-    source: source,
-    geometry: geometry,
-    view: view,
-    pinFirstLevel: true,
-});
-viewer.startMovement(autorotate);
-viewer.setIdleMovement(3000, autorotate);
+    let limiter = Marzipano.RectilinearView.limit.traditional(1448, 100 * Math.PI / 180, 120 * Math.PI / 180);
+    let view = new Marzipano.RectilinearView(null, limiter);
 
-// Set up autorotate, if enabled.
-var autorotate = Marzipano.autorotate({
-    yawSpeed: 0.03,
-    targetPitch: 0,
-    targetFov: Math.PI / 2
-});
-scene.switchTo();
+    let scene = viewer.createScene({
+        source: source,
+        geometry: geometry,
+        view: view,
+        pinFirstLevel: true,
+    });
+
+
+    // Set up autorotate, if enabled.
+    let autorotate = Marzipano.autorotate({
+        yawSpeed: 0.03,
+        targetPitch: 0,
+        targetFov: Math.PI / 2
+    });
+    viewer.startMovement(autorotate);
+    viewer.setIdleMovement(3000, autorotate);
+    scene.switchTo();
+}
+
+
 
 const extractZipFile = (path) => {
     return new Promise((resolve, reject) => {
@@ -170,13 +177,16 @@ const initData = async (path) => {
         main.openWindow("marz");
     });
 }
+
 OPTION_DIV.addEventListener('change', function () {
     debugger;
     if (QUICk_OPTION.checked == true || CUSTOM_OPTION.checked == true) {
         UPLOAD_BUTTON.disabled = false;
     }
 });
-document.getElementById('select-file').addEventListener('click', async function () {
+
+
+UPLOAD_BUTTON.addEventListener('click', async function () {
     dialog.showOpenDialog(async function (fileNames) {
         if (fileNames === undefined) {
             console.log("No file selected");
@@ -184,12 +194,15 @@ document.getElementById('select-file').addEventListener('click', async function 
             let path = fileNames[0];
             if (QUICk_OPTION.checked == true) {
                 await initData(path);
-            } {
-                console.log("Custom")
+            } else {
+                let win = remote.getCurrentWindow();
+                main.openWindow("customOptonPage");
             }
         }
     });
 }, false);
+
+createBackground();
 
 function filterImages(files, scene, minTime) {
     let fileToTile = "";
