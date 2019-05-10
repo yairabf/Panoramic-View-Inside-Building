@@ -179,7 +179,6 @@ const initData = async (path) => {
 }
 
 OPTION_DIV.addEventListener('change', function () {
-    debugger;
     if (QUICk_OPTION.checked == true || CUSTOM_OPTION.checked == true) {
         UPLOAD_BUTTON.disabled = false;
     }

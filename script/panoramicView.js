@@ -16,7 +16,24 @@
 'use strict';
 const remote = require('electron').remote;
 const main = remote.require("./main.js");
+const { dialog } = require('electron').remote;
 
+const onbeforeunload = () => {
+  let choice = dialog.showMessageBox(
+    remote.getCurrentWindow(),
+    {
+      type: 'question',
+      buttons: ['Yes', 'No'],
+      title: 'Confirm',
+      message: 'Are you sure you want to quit?'
+    });
+  if (choice === 0) {
+    main.openWindow("mainWindow");
+  }
+  else {
+    return;
+  }
+};
 
 (function () {
   var Marzipano = window.Marzipano;
@@ -169,8 +186,7 @@ const main = remote.require("./main.js");
   });
 
   mainPageButton.addEventListener('click', function () {
-    let win = remote.getCurrentWindow();
-    main.openWindow("mainWindow");
+    onbeforeunload();
   });
 
 
