@@ -3,6 +3,7 @@ const remote = require('electron').remote;
 const main = remote.require("./main.js");
 const fs = require('fs');
 const path = require('path');
+const AdmZip = require('adm-zip');
 const extract = require('extract-zip');
 const rimraf = require("rimraf");
 
@@ -54,13 +55,21 @@ const createBackground = () => {
 
 const extractZipFile = (path) => {
     return new Promise((resolve, reject) => {
-        extract(path, { dir: UPLOAD_FOLDER }, (err) => {
-            if (err) {
-                reject(err);
-            }
+        var zip = new AdmZip(path);
+        zip.extractAllTo(/*target path*/UPLOAD_FOLDER, /*overwrite*/true);
+        if(zip === null){
+            reject();
+        }
+        else{
             resolve();
-            // extraction is complete. make sure to handle the err
-        });
+        }
+        // extract(path, { dir: UPLOAD_FOLDER }, (err) => {
+        //     if (err) {
+        //         reject(err);
+        //     }
+        //     resolve();
+        //     // extraction is complete. make sure to handle the err
+        // });
     });
 }
 
@@ -107,6 +116,7 @@ const loadImageFiles = () => {
 }
 
 const initCurrentScene = (scene, files) => {
+    debugger;
     return new Promise((resolve, reject) => {
         let minTime = scene.end - scene.start;
         let dest = __dirname + "/tiles/";
@@ -116,6 +126,7 @@ const initCurrentScene = (scene, files) => {
         if (index > -1) {
             files.splice(index, 1);
         }
+        debugger;
         fs.rename(fileToTile, dest + scene.id + ".JPG", (err) => {
             if (err) {
                 return reject(err);
@@ -143,7 +154,7 @@ const initData = async (path) => {
     await moveInfoToDataFolder();
     let scenes = await readSences();
     let files = await loadImageFiles();
-    let prom = scenes.map(initCurrentScene => (files));
+    let prom = scenes.map(scene => initCurrentScene(scene, files));
     await Promise.all(prom);
 
     let APP_DATA = {
@@ -187,6 +198,7 @@ OPTION_DIV.addEventListener('change', function () {
 
 UPLOAD_BUTTON.addEventListener('click', async function () {
     dialog.showOpenDialog(async function (fileNames) {
+        debugger;
         if (fileNames === undefined) {
             console.log("No file selected");
         } else {
@@ -204,6 +216,7 @@ UPLOAD_BUTTON.addEventListener('click', async function () {
 createBackground();
 
 function filterImages(files, scene, minTime) {
+    debugger;
     let fileToTile = "";
     let fileToRemocw = "";
     for (let i = 0; i < files.length; i++) {

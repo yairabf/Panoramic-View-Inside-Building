@@ -51,11 +51,13 @@ const onbeforeunload = () => {
   var fullscreenToggleElement = document.querySelector('#fullscreenToggle');
   var keyboardPlace = document.getElementById("keyboardPlace");
   var mapContainer = document.getElementById('mapContainer')
+  var mapDiv = document.getElementById('mapDiv');
   var mapText = document.getElementById('mapText');
   var mainPageButton = document.getElementById('backToMainPage');
+  var arrowDiv = document.getElementById('arrowDiv');
 
   console.log(data.scenes);
-  for (let i = 0; i < data.scenes.length; i++) {
+  for (let i = 1; i <= data.scenes.length; i++) {
     var sceneList = document.getElementById('scenes');
     var aScene = document.createElement('a');
     aScene.setAttribute("class", "scene");
@@ -66,6 +68,17 @@ const onbeforeunload = () => {
     liScence.innerHTML = i;
     aScene.appendChild(liScence);
     sceneList.appendChild(aScene);
+  }
+
+  console.log(data.scenes);
+  for (let i = 1; i <= data.scenes.length; i++) {
+    var aScene = document.createElement('button');
+    // aScene.setAttribute("class", "scene");
+    aScene.setAttribute("data-id", i);
+    aScene.setAttribute("href", "#");
+    aScene.classList.add("mapBtn");
+    aScene.innerHTML = i;
+    mapDiv.appendChild(aScene);
   }
 
   // Detect desktop or mobile mode.
@@ -190,33 +203,29 @@ const onbeforeunload = () => {
   });
 
 
-  mapContainer.addEventListener('click', function () {
+  arrowDiv.addEventListener('click', function () {
     var arrow = document.getElementById('arrow');
-    var arrowDiv = document.getElementById('arrowDiv');
-    var map = document.getElementById('mapImage');
-    if (this.style.height == '60px' || this.style.height == '') {
+    if (mapContainer.style.height == '60px' || mapContainer.style.height == '') {
       arrowDiv.style.backgroundColor = "rgba(58,68,84,0.8)";
-      this.style.height = '500px';
+      mapContainer.style.height = '500px';
       arrow.src = "img/down.png";
       arrow.style.maxHeight = "30px";
       arrow.style.maxWidth = "30px";
       arrow.style.marginLeft = "35%";
       mapText.innerText = "HIDE MAP";
       mapText.style.margin = "7px";
-      map.style.display = "";
     } else {
-      this.style.height = '60px';
+      mapContainer.style.height = '60px';
       arrow.src = "img/up.png";
       arrow.style.maxHeight = "100%";
       arrow.style.maxWidth = "100%";
       arrow.style.marginLeft = "0%";
       mapText.innerText = "SHOW\nMAP";
       mapText.style.margin = "13px";
-      map.style.display = "none";
       arrowDiv.style.backgroundColor = "";
     }
   }, false);
-  mapContainer.click();
+  arrowDiv.click();
 
   var velocity = 0.7;
   var friction = 3;
@@ -238,7 +247,7 @@ const onbeforeunload = () => {
     updateSceneName(scene);
     updateSceneList(scene);
     var keyboardList = document.createElement("ul");
-    listOfLinkHotspots[scene.data.index].forEach((element, index) => {
+    listOfLinkHotspots[scene.data.index-1].forEach((element, index) => {
       keyboardList.appendChild(createKeyboardElement(element, index));
     });
 
