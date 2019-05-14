@@ -52,9 +52,22 @@ const onbeforeunload = () => {
   var keyboardPlace = document.getElementById("keyboardPlace");
   var mapContainer = document.getElementById('mapContainer')
   var mapDiv = document.getElementById('mapDiv');
-  var mapText = document.getElementById('mapText');
+  var showHideText = document.getElementById('showHideText');
+  var mapInstructions = document.getElementById('mapInstructions');
   var mainPageButton = document.getElementById('backToMainPage');
   var arrowDiv = document.getElementById('arrowDiv');
+
+  // var imgHotspot = document.createElement('img');
+  // imgHotspot.src = 'img/hotspot.png';
+  // imgHotspot.classList.add('hotspot');
+  // imgHotspot.addEventListener('click', function() {
+  //   switchScene(findSceneById(hotspot.target));
+  // });
+
+  // var position = { yaw: Math.PI/4, pitch: Math.PI/8 };
+
+  // marzipanoScene.hotspotContainer().createHotspot(imgHotspot, position);
+
 
   console.log(data.scenes);
   for (let i = 1; i <= data.scenes.length; i++) {
@@ -76,7 +89,9 @@ const onbeforeunload = () => {
     // aScene.setAttribute("class", "scene");
     aScene.setAttribute("data-id", i);
     aScene.setAttribute("href", "#");
-    aScene.classList.add("mapBtn");
+    aScene.classList.add("mapBtn","scene");
+    aScene.style.top = data.scenes[i-1].y;
+    aScene.style.left = data.scenes[i-1].x;
     aScene.innerHTML = i;
     mapDiv.appendChild(aScene);
   }
@@ -120,6 +135,7 @@ const onbeforeunload = () => {
     listOfLinkHotspots.push(scence.linkHotspots);
   });
 
+  
   var scenes = data.scenes.map(function (data) {
     var urlPrefix = "tiles/";
     // var source = Marzipano.ImageUrlSource.fromString(
@@ -131,9 +147,13 @@ const onbeforeunload = () => {
       urlPrefix + data.id + ".JPG");
     //  { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
     var geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
-
+    var initialViewParameters = {
+      "pitch": 0,
+      "yaw": 4,
+      "fov": 1.5707963267948966
+    };
     var limiter = Marzipano.RectilinearView.limit.traditional(data.faceSize, 100 * Math.PI / 180, 120 * Math.PI / 180);
-    var view = new Marzipano.RectilinearView(null, limiter);
+    var view = new Marzipano.RectilinearView(initialViewParameters, limiter);
 
     var scene = viewer.createScene({
       source: source,
@@ -142,7 +162,10 @@ const onbeforeunload = () => {
       pinFirstLevel: true,
     });
 
-
+    data.linkHotspots.forEach(function(hotspot) {
+      var element = createLinkHotspotElement(hotspot);
+      scene.hotspotContainer().createHotspot(element, { yaw: hotspot.yaw, pitch: hotspot.pitch });
+    });
     return {
       data: data,
       scene: scene,
@@ -185,16 +208,31 @@ const onbeforeunload = () => {
   if (!document.body.classList.contains('mobile')) {
     showSceneList();
   }
+  
+    // Dynamic parameters for controls.
+    var velocity = 0.7;
+    var friction = 3;
+  // DOM elements for view controls.
+  var viewUpElement = document.querySelector('#viewUp');
+  var viewDownElement = document.querySelector('#viewDown');
+  var viewLeftElement = document.querySelector('#viewLeft');
+  var viewRightElement = document.querySelector('#viewRight');
+
+  var controls = viewer.controls();
+  controls.registerMethod('upElement',    new Marzipano.ElementPressControlMethod(viewUpElement,     'y', -velocity, friction), true);
+  controls.registerMethod('downElement',  new Marzipano.ElementPressControlMethod(viewDownElement,   'y',  velocity, friction), true);
+  controls.registerMethod('leftElement',  new Marzipano.ElementPressControlMethod(viewLeftElement,   'x', -velocity, friction), true);
+  controls.registerMethod('rightElement', new Marzipano.ElementPressControlMethod(viewRightElement,  'x',  velocity, friction), true);
 
   // Set handler for scene switch.
   scenes.forEach(function (scene) {
-    var el = document.querySelector('#sceneList .scene[data-id="' + scene.data.id + '"]');
-    el.addEventListener('click', function () {
+    var listEl = document.querySelector('#sceneList .scene[data-id="' + scene.data.id + '"]');
+    listEl.addEventListener('click', function () {
       switchScene(scene);
-      // On mobile, hide scene list after selecting a scene.
-      if (document.body.classList.contains('mobile')) {
-        hideSceneList();
-      }
+    });
+    var mapEl = document.querySelector('#mapDiv .scene[data-id="' + scene.data.id + '"]');
+    mapEl.addEventListener('click', function () {
+      switchScene(scene);
     });
   });
 
@@ -211,18 +249,19 @@ const onbeforeunload = () => {
       arrow.src = "img/down.png";
       arrow.style.maxHeight = "30px";
       arrow.style.maxWidth = "30px";
-      arrow.style.marginLeft = "35%";
-      mapText.innerText = "HIDE MAP";
-      mapText.style.margin = "7px";
+      showHideText.innerText = "HIDE MAP";
+      showHideText.style.margin = "7px";
+      mapInstructions.innerText = "Click on point to jump to that point view";
     } else {
       mapContainer.style.height = '60px';
       arrow.src = "img/up.png";
       arrow.style.maxHeight = "100%";
       arrow.style.maxWidth = "100%";
       arrow.style.marginLeft = "0%";
-      mapText.innerText = "SHOW\nMAP";
-      mapText.style.margin = "13px";
+      showHideText.innerText = "SHOW\nMAP";
+      showHideText.style.margin = "13px";
       arrowDiv.style.backgroundColor = "";
+      mapInstructions.innerText = "";
     }
   }, false);
   arrowDiv.click();
@@ -268,6 +307,46 @@ const onbeforeunload = () => {
         el.classList.remove('current');
       }
     }
+  }
+
+  function createLinkHotspotElement(hotspot) {
+
+    // Create wrapper element to hold icon and tooltip.
+    var wrapper = document.createElement('div');
+    wrapper.classList.add('hotspot');
+    wrapper.classList.add('link-hotspot');
+
+    // Create image element.
+    var icon = document.createElement('img');
+    icon.src = 'img/link.png';
+    icon.classList.add('link-hotspot-icon');
+
+    // Set rotation transform.
+    var transformProperties = [ '-ms-transform', '-webkit-transform', 'transform' ];
+    for (var i = 0; i < transformProperties.length; i++) {
+      var property = transformProperties[i];
+      icon.style[property] = 'rotate(' + 0 + 'rad)';
+    }
+
+    // Add click event handler.
+    wrapper.addEventListener('click', function() {
+      switchScene(findSceneById(hotspot.target));
+    });
+
+    // Prevent touch and scroll events from reaching the parent element.
+    // This prevents the view control logic from interfering with the hotspot.
+    stopTouchAndScrollEventPropagation(wrapper);
+
+    // Create tooltip element.
+    var tooltip = document.createElement('div');
+    tooltip.classList.add('hotspot-tooltip');
+    tooltip.classList.add('link-hotspot-tooltip');
+    tooltip.innerHTML = findSceneDataById(hotspot.target).name;
+
+    wrapper.appendChild(icon);
+    wrapper.appendChild(tooltip);
+
+    return wrapper;
   }
 
   function showSceneList() {

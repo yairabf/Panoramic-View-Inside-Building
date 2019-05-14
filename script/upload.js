@@ -3,12 +3,9 @@ const remote = require('electron').remote;
 const main = remote.require("./main.js");
 const fs = require('fs');
 const path = require('path');
-const AdmZip = require('adm-zip');
 const extract = require('extract-zip');
-const rimraf = require("rimraf");
 
 const UPLOAD_FOLDER = __dirname + "/uploads/";
-const DATA_FOLDER = __dirname + "/data/";
 
 const QUICk_OPTION = document.getElementById('quickOpt');
 const CUSTOM_OPTION = document.getElementById('customOpt');
@@ -16,107 +13,7 @@ const OPTION_DIV = document.getElementById('optionDiv');
 const UPLOAD_BUTTON = document.getElementById('select-file');
 
 
-const createBackground = () => {
-    let panoElement = document.querySelector('#pano');
-    let viewerOpts = {
-        controls: {
-            mouseViewMode: "drag"
-        }
-    };
-    let viewer = new Marzipano.Viewer(panoElement, viewerOpts);
-
-    let source = Marzipano.ImageUrlSource.fromString("img/background.jpg");
-    //  { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
-    let geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
-
-    let limiter = Marzipano.RectilinearView.limit.traditional(1448, 100 * Math.PI / 180, 120 * Math.PI / 180);
-    let view = new Marzipano.RectilinearView(null, limiter);
-
-    let scene = viewer.createScene({
-        source: source,
-        geometry: geometry,
-        view: view,
-        pinFirstLevel: true,
-    });
-
-
-    // Set up autorotate, if enabled.
-    let autorotate = Marzipano.autorotate({
-        yawSpeed: 0.03,
-        targetPitch: 0,
-        targetFov: Math.PI / 2
-    });
-    viewer.startMovement(autorotate);
-    viewer.setIdleMovement(3000, autorotate);
-    scene.switchTo();
-}
-
-
-
-const extractZipFile = (path) => {
-    return new Promise((resolve, reject) => {
-        var zip = new AdmZip(path);
-        zip.extractAllTo(/*target path*/UPLOAD_FOLDER, /*overwrite*/true);
-        if(zip === null){
-            reject();
-        }
-        else{
-            resolve();
-        }
-        // extract(path, { dir: UPLOAD_FOLDER }, (err) => {
-        //     if (err) {
-        //         reject(err);
-        //     }
-        //     resolve();
-        //     // extraction is complete. make sure to handle the err
-        // });
-    });
-}
-
-const moveInfoToDataFolder = () => {
-    return new Promise((resolve, reject) => {
-        fs.rename(UPLOAD_FOLDER + "info.json", DATA_FOLDER + "info.json", (err) => {
-            if (err) {
-                return reject(err)
-            }
-            fs.rename(UPLOAD_FOLDER + "map.JPEG", DATA_FOLDER + "map.JPEG", (err) => {
-                if (err) {
-                    return reject(err)
-                }
-                resolve()
-            });
-        });
-
-    });
-}
-
-const readSences = () => {
-    return new Promise((resolve, reject) => {
-        fs.readFile(DATA_FOLDER + "info.json", (err, rawdata) => {
-            if (err) {
-                return reject(err)
-            }
-            let scenes = JSON.parse(rawdata)['scenes'];
-            console.log(scenes);
-            resolve(scenes)
-        });
-
-    });
-}
-
-const loadImageFiles = () => {
-    return new Promise((resolve, reject) => {
-        fs.readdir(UPLOAD_FOLDER, (err, files) => {
-            if (err) {
-                return reject(err);
-            }
-            resolve(files)
-        });
-    });
-}
-
 const initCurrentScene = (scene, files) => {
-    debugger;
     return new Promise((resolve, reject) => {
         let minTime = scene.end - scene.start;
         let dest = __dirname + "/tiles/";
@@ -126,7 +23,6 @@ const initCurrentScene = (scene, files) => {
         if (index > -1) {
             files.splice(index, 1);
         }
-        debugger;
         fs.rename(fileToTile, dest + scene.id + ".JPG", (err) => {
             if (err) {
                 return reject(err);
@@ -135,58 +31,17 @@ const initCurrentScene = (scene, files) => {
         });
     });
 }
-const cleanUploadFolder = () => {
-    return new Promise((resolve, reject) => {
-        fs.readdir(UPLOAD_FOLDER, (err, deleteFiles) => {
-            console.log('====================================');
-            console.log(`${deleteFiles} was deleted`);
-            console.log('====================================');
-            for (let i = 0; i < deleteFiles.length; i++) {
-                fs.unlinkSync(UPLOAD_FOLDER + deleteFiles[i]);
-            }
-            resolve();
-        });
-    });
 
-}
 const initData = async (path) => {
-    await extractZipFile(path);
-    await moveInfoToDataFolder();
-    let scenes = await readSences();
-    let files = await loadImageFiles();
+    let scenes = await main.readSences();
+    let files = await main.loadImageFiles();
     let prom = scenes.map(scene => initCurrentScene(scene, files));
     await Promise.all(prom);
+    main.cleanUploadFolder();
+    await main.createDataFile(scenes);
+    let win = remote.getCurrentWindow();
+    main.openWindow("panoramicView");
 
-    let APP_DATA = {
-        "scenes": [],
-        "name": "Project Title",
-        "settings": {
-            "mouseViewMode": "drag",
-            "autorotateEnabled": true,
-            "fullscreenButton": false,
-            "viewControlButtons": false
-        }
-    };
-
-    for (let i = 0; i < scenes.length; i++) {
-        let dataScene = {
-            "index": scenes[i].id + "",
-            "id": scenes[i].id + "",
-            "name": scenes[i].id + "",
-            "faceSize": 1448,
-            "linkHotspots": scenes[i].links
-        };
-        APP_DATA.scenes.push(dataScene);
-    }
-
-    cleanUploadFolder();
-    fs.writeFile(DATA_FOLDER + "data.js", "var APP_DATA = " + JSON.stringify(APP_DATA), (err) => {
-        if (err) {
-            reject(err);
-        }
-        let win = remote.getCurrentWindow();
-        main.openWindow("marz");
-    });
 }
 
 OPTION_DIV.addEventListener('change', function () {
@@ -198,11 +53,12 @@ OPTION_DIV.addEventListener('change', function () {
 
 UPLOAD_BUTTON.addEventListener('click', async function () {
     dialog.showOpenDialog(async function (fileNames) {
-        debugger;
         if (fileNames === undefined) {
             console.log("No file selected");
         } else {
             let path = fileNames[0];
+            await main.extractZipFile(path);
+            await main.moveInfoToDataFolder();
             if (QUICk_OPTION.checked == true) {
                 await initData(path);
             } else {
@@ -213,16 +69,12 @@ UPLOAD_BUTTON.addEventListener('click', async function () {
     });
 }, false);
 
-createBackground();
-
 function filterImages(files, scene, minTime) {
-    debugger;
     let fileToTile = "";
     let fileToRemocw = "";
     for (let i = 0; i < files.length; i++) {
         let filePath = UPLOAD_FOLDER + files[i];
         let stats = fs.statSync(filePath);
-        console.log(stats);
         if (stats === null) {
             console("error");
         }

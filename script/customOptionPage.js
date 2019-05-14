@@ -1,37 +1,38 @@
 const { dialog } = require('electron').remote;
 const remote = require('electron').remote;
 const main = remote.require("./main.js");
+// const uploadJs = remote.require("./script/upload.js");
 const fs = require('fs');
+const path = require('path');
 
 
 const UPLOAD_FOLDER = __dirname + "/uploads/";
 const DATA_FOLDER = __dirname + "/data/";
+const TILES_FOLDER = __dirname + "/tiles/";
 
 const scenesListsContainer = document.getElementById('scenesListsContainer');
 const modal = document.getElementById('myModal');
 const modalImg = document.getElementById("img01");
 const captionText = document.getElementById("caption");
 const closePreviewModalBtn = document.getElementById("closePreviewModal");
-const mainPageButton = document.getElementById('backToMainPage');
-const submitImagesBtn = document.getElementById('submitImages');
-
+const mainPageButton = document.getElementById('backToMainPageCustom');
 
 
 const onbeforeunload = () => {
-  let choice = dialog.showMessageBox(
-    remote.getCurrentWindow(),
-    {
-      type: 'question',
-      buttons: ['Yes', 'No'],
-      title: 'Confirm',
-      message: 'Are you sure you want to quit?'
-    });
-  if (choice === 0) {
-    main.openWindow("mainWindow");
-  }
-  else {
-    return;
-  }
+    let choice = dialog.showMessageBox(
+        remote.getCurrentWindow(),
+        {
+            type: 'question',
+            buttons: ['Yes', 'No'],
+            title: 'Confirm',
+            message: 'Are you sure you want to quit?'
+        });
+    if (choice === 0) {
+        main.openWindow("mainWindow");
+    }
+    else {
+        return;
+    }
 };
 
 // When the user clicks on <span> (x), close the modal
@@ -42,14 +43,10 @@ closePreviewModalBtn.onclick = function () {
 
 mainPageButton.addEventListener('click', function () {
     onbeforeunload();
-  });
-
-submitImagesBtn.addEventListener('click', function () {
-
 });
-  
+
 const removeModalChilds = () => {
-    while(modalImg.firstElementChild != null){
+    while (modalImg.firstElementChild != null) {
         modalImg.removeChild(modalImg.firstElementChild);
     }
 }
@@ -90,12 +87,7 @@ const createImageForPreviewModal = (path) => {
     return panoElement;
 }
 
-// const QUICk_OPTION = document.getElementById('quickOpt');
-// const CUSTOM_OPTION = document.getElementById('customOpt');
-// const OPTION_DIV = document.getElementById('optionDiv');
-// const UPLOAD_BUTTON = document.getElementById('select-file');
 const addImagesToUl = (scene, files) => {
-    debugger;
     let ulObj = document.createElement('div');
     ulObj.classList.add('sceneUl');
     for (let i = 0; i < files.length; i++) {
@@ -108,21 +100,22 @@ const addImagesToUl = (scene, files) => {
             let liObj = document.createElement('div');
             liObj.classList.add('sceneImage');
             let image = document.createElement('img');
+            image.classList.add('img-check');
             image.src = filePath;
 
             // Get the image and insert it inside the modal - use its "alt" text as a caption
-            image.addEventListener('click',function () {
+            image.addEventListener('click', function () {
                 modal.style.display = "block";
                 // modal.removeChild(modalImg);  
                 // modalImg.removeChild         
                 removeModalChilds();
                 modalImg.src = createImageForPreviewModal(this.src);
-                
+
             });
             let checkbox = document.createElement('input');
-            checkbox.setAttribute('type',"radio");
-            checkbox.setAttribute('name',"imgChose" + scene.id);
-            checkbox.setAttribute('value',filePath);
+            checkbox.setAttribute('type', "radio");
+            checkbox.setAttribute('name', "imgChose" + scene.id);
+            checkbox.setAttribute('value', filePath);
             checkbox.classList.add('imgChose');
             liObj.appendChild(image);
             liObj.appendChild(checkbox);
@@ -133,21 +126,74 @@ const addImagesToUl = (scene, files) => {
     return ulObj;
 }
 
-const createUlForScene = (scenes, files) => {
-    return new Promise((resolve, reject) => {
-        scenes.forEach((element, index) => {
-            let divObj = document.createElement('div');
-            divObj.classList.add('sceneOptinsContainer');
-            let sceneH3 = document.createElement('h2');
-            sceneH3.classList.add('sceneH3');
-            sceneH3.innerHTML = "Scene number: " + index;
-            let ulObj = addImagesToUl(element, files);
+const getCheckedRadio = (selectElements) => {
+    for (let i = 0; i < selectElements.length; i++) {
+        if (selectElements[i].checked === true) {
+            return selectElements[i];
+        }
+    }
+    return false;
+}
 
-            divObj.appendChild(sceneH3);
-            divObj.appendChild(ulObj);
-            scenesListsContainer.appendChild(divObj);
+const validateForm = (scenes) => {
+    let form = document.forms[0];
+    for (let i = 0; i < scenes.length; i++) {
+        let name = "imgChose" + scenes[i].id;
+        let selectElements = form.querySelectorAll('input[name="' + name + '"]');
+        if (getCheckedRadio(selectElements) === false) {
+            return false;
+        }
+    }
+    return true;
+}
+
+const initData = async () => {
+    let scenes = await main.readSences();
+    return new Promise((resolve, reject) => {
+        scenes.forEach((scene) => {
+            let form = document.forms[0];
+            let name = "imgChose" + scene.id;
+            let selectElements = form.querySelectorAll('input[name="' + name + '"]');
+            let checkedElement = getCheckedRadio(selectElements);
+            let selectedValue = checkedElement.value;
+            fs.rename(selectedValue, TILES_FOLDER + scene.id + ".JPG", (err) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve();
+            });
         });
     });
+}
+
+const createUlForScene = (scenes, files) => {
+    scenes.forEach((element, index) => {
+        let divObj = document.createElement('div');
+        divObj.classList.add('sceneOptinsContainer');
+        let sceneH3 = document.createElement('h2');
+        sceneH3.classList.add('sceneH3');
+        sceneH3.innerHTML = "Scene number: " + (index + 1);
+        let ulObj = addImagesToUl(element, files);
+
+        divObj.appendChild(sceneH3);
+        divObj.appendChild(ulObj);
+        scenesListsContainer.appendChild(divObj);
+    });
+    // <input type="submit" value="Submit" id="submitImages">
+    let submitBtn = document.createElement('button');
+    submitBtn.setAttribute('id', 'submitBtn');
+    submitBtn.innerHTML = "Create View"
+    submitBtn.addEventListener('click', async function () {
+        if (validateForm(scenes)) {
+            await initData();
+            main.cleanUploadFolder();
+            let win = remote.getCurrentWindow();
+            main.openWindow("panoramicView");
+        } else {
+            alert("Please choose picture for each scene!");
+        }
+    });
+    scenesListsContainer.appendChild(submitBtn);
 }
 
 const filterImages = (files, scene) => {
@@ -164,53 +210,14 @@ const filterImages = (files, scene) => {
     return fileToTile;
 }
 
-const readSences = () => {
-    return new Promise((resolve, reject) => {
-        fs.readFile(DATA_FOLDER + "info.json", (err, rawdata) => {
-            if (err) {
-                return reject(err)
-            }
-            let scenes = JSON.parse(rawdata)['scenes'];
-            console.log(scenes);
-            resolve(scenes)
-        });
-    });
-}
 
-const initCurrentScene = (scene, files) => {
-    return new Promise((resolve, reject) => {
-        let fileToTile = filterImages(files, scene);
-        index = files.indexOf(fileToRemove);
-        if (index > -1) {
-            files.splice(index, 1);
-        }
-        fs.rename(fileToTile, dest + scene.id + ".JPG", (err) => {
-            if (err) {
-                return reject(err);
-            }
-            resolve();
-        });
-    });
-}
-
-const loadImageFiles = () => {
-    return new Promise((resolve, reject) => {
-        fs.readdir(UPLOAD_FOLDER, (err, files) => {
-            if (err) {
-                return reject(err);
-            }
-            resolve(files)
-        });
-    });
-}
 
 const createGallery = async () => {
-    debugger;
-    let scenes = await readSences();
-    let files = await loadImageFiles();
+    let scenes = await main.readSences();
+    let files = await main.loadImageFiles();
     createUlForScene(scenes, files);
-    let prom = scenes.map(initCurrentScene => (files));
-    await Promise.all(prom);
+    // let prom = scenes.map(initCurrentScene => (files));
+    // await Promise.all(prom);
 }
 
 createGallery();

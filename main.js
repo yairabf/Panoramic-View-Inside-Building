@@ -1,8 +1,16 @@
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
+const fs = require('fs');
+const AdmZip = require('adm-zip');
 const {app, BrowserWindow} = electron;
+
 const PAGES_FOLDER = __dirname;
+const UPLOAD_FOLDER = PAGES_FOLDER + "/uploads/"
+const DATA_FOLDER = PAGES_FOLDER + "/data/";
+const STYLE_FOLDER = PAGES_FOLDER + "/style/data/";
+
+
 
 var mainWindow = null;
 app.on('ready', function(){
@@ -25,4 +33,119 @@ exports.openWindow = (page) => {
     //let devtools = new BrowserWindow();
     //mainWindow.webContents.setDevToolsWebContents(devtools.webContents);
     //mainWindow.webContents.openDevTools({ mode: 'detach' });
+}
+
+
+exports.cleanUploadFolder = () => {
+    return new Promise((resolve, reject) => {
+        fs.readdir(UPLOAD_FOLDER, (err, deleteFiles) => {
+            console.log('====================================');
+            console.log(`${deleteFiles} was deleted`);
+            console.log('====================================');
+            for (let i = 0; i < deleteFiles.length; i++) {
+                fs.unlink(UPLOAD_FOLDER + deleteFiles[i], (err)=>{
+                    if(err){
+                        reject();
+                    }
+                });
+            }
+            resolve();
+        });
+    });
+}
+
+exports.moveInfoToDataFolder = () => {
+    return new Promise((resolve, reject) => {
+        fs.rename(UPLOAD_FOLDER + "info.json", DATA_FOLDER + "info.json", (err) => {
+            if (err) {
+                return reject(err)
+            }
+            fs.rename(UPLOAD_FOLDER + "map.JPEG", STYLE_FOLDER + "map.JPEG", (err) => {
+                if (err) {
+                    return reject(err)
+                }
+                resolve()
+            });
+        });
+
+    });
+}
+
+exports.loadImageFiles = () => {
+    return new Promise((resolve, reject) => {
+        fs.readdir(UPLOAD_FOLDER, (err, files) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(files)
+        });
+    });
+}
+
+exports.readSences = () => {
+    return new Promise((resolve, reject) => {
+        fs.readFile(DATA_FOLDER + "info.json", (err, rawdata) => {
+            if (err) {
+                return reject(err)
+            }
+            let scenes = JSON.parse(rawdata)['scenes'];
+            console.log(scenes);
+            resolve(scenes)
+        });
+
+    });
+}
+
+exports.extractZipFile = (path) => {
+    return new Promise((resolve, reject) => {
+        var zip = new AdmZip(path);
+        zip.extractAllTo(/*target path*/UPLOAD_FOLDER, /*overwrite*/true);
+        if(zip === null){
+            reject();
+        }
+        else{
+            resolve();
+        }
+        // extract(path, { dir: UPLOAD_FOLDER }, (err) => {
+        //     if (err) {
+        //         reject(err);
+        //     }
+        //     resolve();
+        //     // extraction is complete. make sure to handle the err
+        // });
+    });
+}
+
+exports.createDataFile = (scenes)=>{
+    return new Promise((resolve, reject) => {
+        let APP_DATA = {
+            "scenes": [],
+            "name": "Project Title",
+            "settings": {
+                "mouseViewMode": "drag",
+                "autorotateEnabled": true,
+                "fullscreenButton": false,
+                "viewControlButtons": false
+            }
+        };
+    
+        for (let i = 0; i < scenes.length; i++) {
+            let dataScene = {
+                "index": scenes[i].id + "",
+                "id": scenes[i].id + "",
+                "y": scenes[i].y + "px",
+                "x": scenes[i].x + "px",
+                "name": scenes[i].id + "",
+                "faceSize": 1448,
+                "linkHotspots": scenes[i].links
+            };
+            APP_DATA.scenes.push(dataScene);
+        }
+        fs.writeFile(DATA_FOLDER + "data.js", "var APP_DATA = " + JSON.stringify(APP_DATA), (err) => {
+            if (err) {
+                reject(err);
+            }
+            resolve();
+        });
+    });
 }
