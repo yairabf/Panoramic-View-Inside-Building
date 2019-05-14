@@ -185,6 +185,7 @@ const createUlForScene = (scenes, files) => {
     submitBtn.addEventListener('click', async function () {
         if (validateForm(scenes)) {
             await initData();
+            await main.createDataFile(scenes);
             main.cleanUploadFolder();
             let win = remote.getCurrentWindow();
             main.openWindow("panoramicView");
