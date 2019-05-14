@@ -1,9 +1,7 @@
 const { dialog } = require('electron').remote;
 const remote = require('electron').remote;
 const main = remote.require("./main.js");
-// const uploadJs = remote.require("./script/upload.js");
 const fs = require('fs');
-const path = require('path');
 
 
 const UPLOAD_FOLDER = __dirname + "/uploads/";
@@ -12,7 +10,6 @@ const TILES_FOLDER = __dirname + "/tiles/";
 const scenesListsContainer = document.getElementById('scenesListsContainer');
 const modal = document.getElementById('myModal');
 const modalImg = document.getElementById("img01");
-const captionText = document.getElementById("caption");
 const closePreviewModalBtn = document.getElementById("closePreviewModal");
 const mainPageButton = document.getElementById('backToMainPageCustom');
 
@@ -30,7 +27,7 @@ const onbeforeunload = () => {
         main.openWindow("mainWindow");
     }
     else {
-        return;
+
     }
 };
 
@@ -48,7 +45,7 @@ const removeModalChilds = () => {
     while (modalImg.firstElementChild != null) {
         modalImg.removeChild(modalImg.firstElementChild);
     }
-}
+};
 
 const createImageForPreviewModal = (path) => {
     let panoElement = document.querySelector('#img01');
@@ -60,7 +57,6 @@ const createImageForPreviewModal = (path) => {
     let viewer = new Marzipano.Viewer(panoElement, viewerOpts);
 
     let source = Marzipano.ImageUrlSource.fromString(path);
-    //  { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
     let geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
 
     let limiter = Marzipano.RectilinearView.limit.traditional(1448, 100 * Math.PI / 180, 120 * Math.PI / 180);
@@ -84,7 +80,7 @@ const createImageForPreviewModal = (path) => {
     viewer.setIdleMovement(3000, autorotate);
     scene.switchTo();
     return panoElement;
-}
+};
 
 const addImagesToUl = (scene, files) => {
     let ulObj = document.createElement('div');
@@ -105,8 +101,6 @@ const addImagesToUl = (scene, files) => {
             // Get the image and insert it inside the modal - use its "alt" text as a caption
             image.addEventListener('click', function () {
                 modal.style.display = "block";
-                // modal.removeChild(modalImg);  
-                // modalImg.removeChild         
                 removeModalChilds();
                 modalImg.src = createImageForPreviewModal(this.src);
 
@@ -123,7 +117,7 @@ const addImagesToUl = (scene, files) => {
         }
     }
     return ulObj;
-}
+};
 
 const getCheckedRadio = (selectElements) => {
     for (let i = 0; i < selectElements.length; i++) {
@@ -132,7 +126,7 @@ const getCheckedRadio = (selectElements) => {
         }
     }
     return false;
-}
+};
 
 const validateForm = (scenes) => {
     let form = document.forms[0];
@@ -144,7 +138,7 @@ const validateForm = (scenes) => {
         }
     }
     return true;
-}
+};
 
 const initData = async () => {
     let scenes = await main.readSences();
@@ -161,9 +155,9 @@ const initData = async () => {
                 }
                 resolve();
             });
-        });
+        // });
     });
-}
+};
 
 const createUlForScene = (scenes, files) => {
     scenes.forEach((element, index) => {
@@ -178,10 +172,10 @@ const createUlForScene = (scenes, files) => {
         divObj.appendChild(ulObj);
         scenesListsContainer.appendChild(divObj);
     });
-    // <input type="submit" value="Submit" id="submitImages">
+    
     let submitBtn = document.createElement('button');
     submitBtn.setAttribute('id', 'submitBtn');
-    submitBtn.innerHTML = "Create View"
+    submitBtn.innerHTML = "Create View";
     submitBtn.addEventListener('click', async function () {
         if (validateForm(scenes)) {
             await initData();
@@ -194,30 +188,14 @@ const createUlForScene = (scenes, files) => {
         }
     });
     scenesListsContainer.appendChild(submitBtn);
-}
-
-const filterImages = (files, scene) => {
-    for (let i = 0; i < files.length; i++) {
-        let filePath = UPLOAD_FOLDER + files[i];
-        let stats = fs.statSync(filePath);
-        if (stats === null) {
-            console("error");
-        }
-        if (stats['birthtimeMs'] >= scene.start && stats['birthtimeMs'] <= scene.end) {
-
-        }
-    }
-    return fileToTile;
-}
-
+};
 
 
 const createGallery = async () => {
     let scenes = await main.readSences();
     let files = await main.loadImageFiles();
     createUlForScene(scenes, files);
-    // let prom = scenes.map(initCurrentScene => (files));
-    // await Promise.all(prom);
-}
+
+};
 
 createGallery();
