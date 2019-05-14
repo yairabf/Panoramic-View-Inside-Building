@@ -7,7 +7,6 @@ const path = require('path');
 
 
 const UPLOAD_FOLDER = __dirname + "/uploads/";
-const DATA_FOLDER = __dirname + "/data/";
 const TILES_FOLDER = __dirname + "/tiles/";
 
 const scenesListsContainer = document.getElementById('scenesListsContainer');

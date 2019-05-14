@@ -57,18 +57,6 @@ const onbeforeunload = () => {
   var mainPageButton = document.getElementById('backToMainPage');
   var arrowDiv = document.getElementById('arrowDiv');
 
-  // var imgHotspot = document.createElement('img');
-  // imgHotspot.src = 'img/hotspot.png';
-  // imgHotspot.classList.add('hotspot');
-  // imgHotspot.addEventListener('click', function() {
-  //   switchScene(findSceneById(hotspot.target));
-  // });
-
-  // var position = { yaw: Math.PI/4, pitch: Math.PI/8 };
-
-  // marzipanoScene.hotspotContainer().createHotspot(imgHotspot, position);
-
-
   console.log(data.scenes);
   for (let i = 1; i <= data.scenes.length; i++) {
     var sceneList = document.getElementById('scenes');
