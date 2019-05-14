@@ -26,9 +26,7 @@ const onbeforeunload = () => {
     if (choice === 0) {
         main.openWindow("mainWindow");
     }
-    else {
-
-    }
+    return;
 };
 
 // When the user clicks on <span> (x), close the modal
@@ -155,9 +153,9 @@ const initData = async () => {
                 }
                 resolve();
             });
-        // });
+        });
     });
-};
+}
 
 const createUlForScene = (scenes, files) => {
     scenes.forEach((element, index) => {
@@ -172,7 +170,7 @@ const createUlForScene = (scenes, files) => {
         divObj.appendChild(ulObj);
         scenesListsContainer.appendChild(divObj);
     });
-    
+
     let submitBtn = document.createElement('button');
     submitBtn.setAttribute('id', 'submitBtn');
     submitBtn.innerHTML = "Create View";
