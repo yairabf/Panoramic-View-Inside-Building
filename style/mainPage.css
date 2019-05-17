@@ -17,7 +17,7 @@ input#select-file {
 input#select-file:disabled {
   border: 1px solid #999999;
   background-color: #cccccc;
-  color: #666666;
+  color: #66666666;
   box-shadow: none;
 }
 
