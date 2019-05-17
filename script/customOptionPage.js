@@ -2,6 +2,7 @@ const { dialog } = require('electron').remote;
 const remote = require('electron').remote;
 const main = remote.require("./main.js");
 const fs = require('fs');
+const path = require('path');
 
 
 const UPLOAD_FOLDER = __dirname + "/uploads/";
@@ -26,6 +27,20 @@ const onbeforeunload = () => {
     if (choice === 0) {
         main.openWindow("mainWindow");
     }
+    else {
+        return;
+    }
+};
+
+const missingInputDialog = () => {
+    let choice = dialog.showMessageBox(
+        remote.getCurrentWindow(),
+        {
+            type: 'question',
+            buttons: ['Cancel'],
+            title: 'Confirm',
+            message: 'Please choose a picture for every point view!'
+        });
     return;
 };
 
@@ -43,7 +58,7 @@ const removeModalChilds = () => {
     while (modalImg.firstElementChild != null) {
         modalImg.removeChild(modalImg.firstElementChild);
     }
-};
+}
 
 const createImageForPreviewModal = (path) => {
     let panoElement = document.querySelector('#img01');
@@ -55,6 +70,7 @@ const createImageForPreviewModal = (path) => {
     let viewer = new Marzipano.Viewer(panoElement, viewerOpts);
 
     let source = Marzipano.ImageUrlSource.fromString(path);
+    //  { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
     let geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
 
     let limiter = Marzipano.RectilinearView.limit.traditional(1448, 100 * Math.PI / 180, 120 * Math.PI / 180);
@@ -78,27 +94,25 @@ const createImageForPreviewModal = (path) => {
     viewer.setIdleMovement(3000, autorotate);
     scene.switchTo();
     return panoElement;
-};
+}
 
-const addImagesToUl = (scene, files) => {
+const addImagesToUl = async (scene, files) => {
     let ulObj = document.createElement('div');
     ulObj.classList.add('sceneUl');
     for (let i = 0; i < files.length; i++) {
-        let filePath = UPLOAD_FOLDER + files[i];
-        let stats = fs.statSync(filePath);
-        if (stats === null) {
-            console("error");
-        }
-        if (stats['birthtimeMs'] >= scene.start && stats['birthtimeMs'] <= scene.end) {
+        let time = await main.imageCreationTime(files[i], scene);
+        if (time != null) {
             let liObj = document.createElement('div');
             liObj.classList.add('sceneImage');
             let image = document.createElement('img');
             image.classList.add('img-check');
-            image.src = filePath;
-
+            image.src = main.getUploadFolder() + files[i];
+            debugger;
             // Get the image and insert it inside the modal - use its "alt" text as a caption
             image.addEventListener('click', function () {
                 modal.style.display = "block";
+                // modal.removeChild(modalImg);  
+                // modalImg.removeChild         
                 removeModalChilds();
                 modalImg.src = createImageForPreviewModal(this.src);
 
@@ -106,7 +120,7 @@ const addImagesToUl = (scene, files) => {
             let checkbox = document.createElement('input');
             checkbox.setAttribute('type', "radio");
             checkbox.setAttribute('name', "imgChose" + scene.id);
-            checkbox.setAttribute('value', filePath);
+            checkbox.setAttribute('value', main.UPLOAD_FOLDER + files[i]);
             checkbox.classList.add('imgChose');
             liObj.appendChild(image);
             liObj.appendChild(checkbox);
@@ -115,7 +129,7 @@ const addImagesToUl = (scene, files) => {
         }
     }
     return ulObj;
-};
+}
 
 const getCheckedRadio = (selectElements) => {
     for (let i = 0; i < selectElements.length; i++) {
@@ -124,7 +138,7 @@ const getCheckedRadio = (selectElements) => {
         }
     }
     return false;
-};
+}
 
 const validateForm = (scenes) => {
     let form = document.forms[0];
@@ -136,64 +150,61 @@ const validateForm = (scenes) => {
         }
     }
     return true;
-};
-
-const initData = async () => {
-    let scenes = await main.readSences();
-    return new Promise((resolve, reject) => {
-        scenes.forEach((scene) => {
-            let form = document.forms[0];
-            let name = "imgChose" + scene.id;
-            let selectElements = form.querySelectorAll('input[name="' + name + '"]');
-            let checkedElement = getCheckedRadio(selectElements);
-            let selectedValue = checkedElement.value;
-            fs.rename(selectedValue, TILES_FOLDER + scene.id + ".JPG", (err) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve();
-            });
-        });
-    });
 }
 
-const createUlForScene = (scenes, files) => {
-    scenes.forEach((element, index) => {
+const initData = async (scenes) => {
+    scenes.forEach(async (scene) => {
+        let form = document.forms[0];
+        let name = "imgChose" + scene.id;
+        let selectElements = form.querySelectorAll('input[name="' + name + '"]');
+        let checkedElement = getCheckedRadio(selectElements);
+        let selectedValue = checkedElement.value;
+        await main.moveFileToTileFolder(scene, selectedValue);
+    });
+}
+const createUlForScene = (scene, files, index) => {
+    return new Promise(async (resolve) => {
         let divObj = document.createElement('div');
         divObj.classList.add('sceneOptinsContainer');
         let sceneH3 = document.createElement('h2');
         sceneH3.classList.add('sceneH3');
         sceneH3.innerHTML = "Scene number: " + (index + 1);
-        let ulObj = addImagesToUl(element, files);
-
         divObj.appendChild(sceneH3);
+        let ulObj = await addImagesToUl(scene, files);
+
         divObj.appendChild(ulObj);
         scenesListsContainer.appendChild(divObj);
+        resolve();
     });
+}
 
+const createForm = async (scenes, files) => {
+    debugger;
+    let prom = scenes.map((scene, index) => createUlForScene(scene, files, index));
+    await Promise.all(prom);
     let submitBtn = document.createElement('button');
     submitBtn.setAttribute('id', 'submitBtn');
-    submitBtn.innerHTML = "Create View";
+    submitBtn.innerHTML = "Create View"
     submitBtn.addEventListener('click', async function () {
         if (validateForm(scenes)) {
-            await initData();
+            await initData(scenes);
             await main.createDataFile(scenes);
-            main.cleanUploadFolder();
-            let win = remote.getCurrentWindow();
+            await main.cleanUploadFolder();
             main.openWindow("panoramicView");
         } else {
-            alert("Please choose picture for each scene!");
+            missingInputDialog();
         }
     });
     scenesListsContainer.appendChild(submitBtn);
-};
-
+}
 
 const createGallery = async () => {
+    debugger;
     let scenes = await main.readSences();
     let files = await main.loadImageFiles();
-    createUlForScene(scenes, files);
-
-};
+    createForm(scenes, files);
+    // let prom = scenes.map(initCurrentScene => (files));
+    // await Promise.all(prom);
+}
 
 createGallery();

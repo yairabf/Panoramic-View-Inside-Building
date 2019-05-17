@@ -2,14 +2,16 @@ const electron = require('electron');
 const url = require('url');
 const path = require('path');
 const fs = require('fs');
+const rimraf = require("rimraf");
+
 const AdmZip = require('adm-zip');
 const {app, BrowserWindow} = electron;
 
 const PAGES_FOLDER = __dirname;
-const UPLOAD_FOLDER = PAGES_FOLDER + "/uploads/"
+const UPLOAD_FOLDER = PAGES_FOLDER + "/uploads/";
 const DATA_FOLDER = PAGES_FOLDER + "/data/";
 const STYLE_FOLDER = PAGES_FOLDER + "/style/data/";
-
+const TILE_FOLDER = PAGES_FOLDER + "/tiles/";
 
 
 var mainWindow = null;
@@ -35,6 +37,9 @@ exports.openWindow = (page) => {
     //mainWindow.webContents.openDevTools({ mode: 'detach' });
 }
 
+exports.getUploadFolder = () => {
+    return UPLOAD_FOLDER;
+}
 
 exports.cleanUploadFolder = () => {
     return new Promise((resolve, reject) => {
@@ -42,6 +47,21 @@ exports.cleanUploadFolder = () => {
             console.log('====================================');
             console.log(`${deleteFiles} was deleted`);
             console.log('====================================');
+            if(deleteFiles.indexOf('__MACOSX') > -1){
+                rimraf(UPLOAD_FOLDER+'__MACOSX', (err) => { 
+                    if(err){
+                        reject();
+                    }
+                    for (let i = 0; i < deleteFiles.length; i++) {
+                        fs.unlink(UPLOAD_FOLDER + deleteFiles[i], (err)=>{
+                            if(err){
+                                reject();
+                            }
+                        });
+                    }
+                    resolve();
+                });
+            }
             for (let i = 0; i < deleteFiles.length; i++) {
                 fs.unlink(UPLOAD_FOLDER + deleteFiles[i], (err)=>{
                     if(err){
@@ -50,6 +70,36 @@ exports.cleanUploadFolder = () => {
                 });
             }
             resolve();
+        });
+    });
+}
+exports.moveFileToTileFolder = (scene, fileToTile, files) => {
+    return new Promise((resolve, reject) => {
+        index = files.indexOf(fileToTile);
+        if (index > -1) {
+            files.splice(index, 1);
+        }
+        fs.rename(UPLOAD_FOLDER + fileToTile, TILE_FOLDER + scene.id + ".JPG", (err) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(); 
+        });
+    });
+}
+
+exports.imageCreationTime = (file, scene) => {
+    return new Promise((resolve, reject) => {
+        let filePath = UPLOAD_FOLDER + file;
+        fs.stat(filePath, (err ,stats) => {
+            if (err) {
+                return reject(err);
+            }
+            if (stats['mtimeMs'] >= scene.start && stats['mtimeMs'] <= scene.end) {
+                resolve(scene.end - stats['mtimeMs']);
+            } else {
+                resolve(null);
+            }
         });
     });
 }
