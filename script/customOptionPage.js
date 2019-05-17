@@ -2,16 +2,12 @@ const { dialog } = require('electron').remote;
 const remote = require('electron').remote;
 const main = remote.require("./main.js");
 
-
-const UPLOAD_FOLDER = __dirname + "/uploads/";
-const TILES_FOLDER = __dirname + "/tiles/";
-
-const scenesListsContainer = document.getElementById('scenesListsContainer');
-const modal = document.getElementById('myModal');
-const modalImg = document.getElementById("img01");
-const closePreviewModalBtn = document.getElementById("closePreviewModal");
-const mainPageButton = document.getElementById('backToMainPageCustom');
-const submitBtn = document.getElementById('submitBtn');
+const SCENES_LISTS_CONTAINER = document.getElementById('scenesListsContainer');
+const MODAL = document.getElementById('myModal');
+const MODAL_IMAGE = document.getElementById("img01");
+const CLOSE_PREVIEW_MODAL_BTN = document.getElementById("closePreviewModal");
+const MAIN_PAGE_BTN = document.getElementById('backToMainPageCustom');
+const SUBMIT_BTN = document.getElementById('submitBtn');
 
 
 const onbeforeunload = () => {
@@ -44,19 +40,19 @@ const missingInputDialog = () => {
 };
 
 // When the user clicks on <span> (x), close the modal
-closePreviewModalBtn.onclick = function () {
-    modal.style.display = "none";
+CLOSE_PREVIEW_MODAL_BTN.onclick = () => {
+    MODAL.style.display = "none";
 };
 
 
 
-mainPageButton.addEventListener('click', function () {
+MAIN_PAGE_BTN.addEventListener('click', () => {
     onbeforeunload();
 });
 
 const removeModalChilds = () => {
-    while (modalImg.firstElementChild != null) {
-        modalImg.removeChild(modalImg.firstElementChild);
+    while (MODAL_IMAGE.firstElementChild != null) {
+        MODAL_IMAGE.removeChild(MODAL_IMAGE.firstElementChild);
     }
 }
 
@@ -109,15 +105,16 @@ const addImagesToUl = async (scene, files) => {
             image.src = main.getUploadFolder() + files[i];
             // Get the image and insert it inside the modal - use its "alt" text as a caption
             image.addEventListener('click', function () {
-                modal.style.display = "block";       
+                MODAL.style.display = "block";       
                 removeModalChilds();
-                modalImg.src = createImageForPreviewModal(this.src);
+                MODAL_IMAGE.src = createImageForPreviewModal(this.src);
 
             });
             let checkbox = document.createElement('input');
             checkbox.setAttribute('type', "radio");
             checkbox.setAttribute('name', "imgChose" + scene.id);
-            checkbox.setAttribute('value', main.UPLOAD_FOLDER + files[i]);
+            checkbox.setAttribute('value', main.getUploadFolder() + files[i]);
+            debugger;
             checkbox.classList.add('imgChose');
             liObj.appendChild(image);
             liObj.appendChild(checkbox);
@@ -159,6 +156,8 @@ const initData = async (scenes) => {
         await main.moveFileToTileFolder(scene, selectedValue);
     });
 }
+
+
 const createUlForScene = (scene, files, index) => {
     return new Promise(async (resolve) => {
         let divObj = document.createElement('div');
@@ -170,7 +169,7 @@ const createUlForScene = (scene, files, index) => {
         let ulObj = await addImagesToUl(scene, files);
 
         divObj.appendChild(ulObj);
-        scenesListsContainer.appendChild(divObj);
+        SCENES_LISTS_CONTAINER.appendChild(divObj);
         resolve();
     });
 }
@@ -178,7 +177,7 @@ const createUlForScene = (scene, files, index) => {
 const createForm = async (scenes, files) => {
     let prom = scenes.map((scene, index) => createUlForScene(scene, files, index));
     await Promise.all(prom);
-    submitBtn.addEventListener('click', async function () {
+    SUBMIT_BTN.addEventListener('click', async function () {
         if (validateForm(scenes)) {
             initData(scenes);
             await main.createDataFile(scenes);

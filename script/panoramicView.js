@@ -36,35 +36,35 @@ const onbeforeunload = () => {
 };
 
 (function () {
-  var Marzipano = window.Marzipano;
-  //var bowser = window.bowser;
-  //var screenfull = window.screenfull;
-  var data = window.APP_DATA;
+  let Marzipano = window.Marzipano;
+  //let bowser = window.bowser;
+  //let screenfull = window.screenfull;
+  let data = window.APP_DATA;
 
   // Grab elements from DOM.
-  var panoElement = document.querySelector('#pano');
-  var sceneNameElement = document.querySelector('#titleBar .sceneName');
-  var sceneListElement = document.querySelector('#sceneList');
-  var sceneElements = document.querySelectorAll('#sceneList .scene');
-  var sceneListToggleElement = document.querySelector('#sceneListToggle');
-  var autorotateToggleElement = document.querySelector('#autorotateToggle');
-  var fullscreenToggleElement = document.querySelector('#fullscreenToggle');
-  var keyboardPlace = document.getElementById("keyboardPlace");
-  var mapContainer = document.getElementById('mapContainer')
-  var mapDiv = document.getElementById('mapDiv');
-  var showHideText = document.getElementById('showHideText');
-  var mapInstructions = document.getElementById('mapInstructions');
-  var mainPageButton = document.getElementById('backToMainPage');
-  var arrowDiv = document.getElementById('arrowDiv');
+  let panoElement = document.querySelector('#pano');
+  let sceneNameElement = document.querySelector('#titleBar .sceneName');
+  let sceneListElement = document.querySelector('#sceneList');
+  let sceneElements = document.querySelectorAll('#sceneList .scene');
+  let sceneListToggleElement = document.querySelector('#sceneListToggle');
+  let autorotateToggleElement = document.querySelector('#autorotateToggle');
+  let fullscreenToggleElement = document.querySelector('#fullscreenToggle');
+  let keyboardPlace = document.getElementById("keyboardPlace");
+  let mapContainer = document.getElementById('mapContainer')
+  let mapDiv = document.getElementById('mapDiv');
+  let showHideText = document.getElementById('showHideText');
+  let mapInstructions = document.getElementById('mapInstructions');
+  let mainPageButton = document.getElementById('backToMainPage');
+  let arrowDiv = document.getElementById('arrowDiv');
 
   console.log(data.scenes);
   for (let i = 1; i <= data.scenes.length; i++) {
-    var sceneList = document.getElementById('scenes');
-    var aScene = document.createElement('a');
+    let sceneList = document.getElementById('scenes');
+    let aScene = document.createElement('a');
     aScene.setAttribute("class", "scene");
     aScene.setAttribute("data-id", i);
     aScene.setAttribute("href", "#");
-    var liScence = document.createElement('li');
+    let liScence = document.createElement('li');
     liScence.setAttribute("class", "text");
     liScence.innerHTML = i;
     aScene.appendChild(liScence);
@@ -73,20 +73,20 @@ const onbeforeunload = () => {
 
   console.log(data.scenes);
   for (let i = 1; i <= data.scenes.length; i++) {
-    var aScene = document.createElement('button');
+    let aScene = document.createElement('button');
     // aScene.setAttribute("class", "scene");
     aScene.setAttribute("data-id", i);
     aScene.setAttribute("href", "#");
-    aScene.classList.add("mapBtn","scene");
-    aScene.style.top = data.scenes[i-1].y;
-    aScene.style.left = data.scenes[i-1].x;
+    aScene.classList.add("mapBtn", "scene");
+    aScene.style.top = data.scenes[i - 1].y;
+    aScene.style.left = data.scenes[i - 1].x;
     aScene.innerHTML = i;
     mapDiv.appendChild(aScene);
   }
 
   // Detect desktop or mobile mode.
   if (window.matchMedia) {
-    var setMode = function () {
+    let setMode = function () {
       if (mql.matches) {
         document.body.classList.remove('desktop');
         document.body.classList.add('mobile');
@@ -95,7 +95,7 @@ const onbeforeunload = () => {
         document.body.classList.add('desktop');
       }
     };
-    var mql = matchMedia("(max-width: 500px), (max-height: 500px)");
+    let mql = matchMedia("(max-width: 500px), (max-height: 500px)");
     setMode();
     mql.addListener(setMode);
   } else {
@@ -110,44 +110,44 @@ const onbeforeunload = () => {
   });
 
   // Viewer options.
-  var viewerOpts = {
+  let viewerOpts = {
     controls: {
       mouseViewMode: data.settings.mouseViewMode
     }
   };
 
   // Initialize viewer.
-  var viewer = new Marzipano.Viewer(panoElement, viewerOpts);
-  var listOfLinkHotspots = [];
+  let viewer = new Marzipano.Viewer(panoElement, viewerOpts);
+  let listOfLinkHotspots = [];
   data.scenes.forEach(function (scence) {
     listOfLinkHotspots.push(scence.linkHotspots);
   });
 
-  
-  var scenes = data.scenes.map(function (data) {
-    var urlPrefix = "tiles/";
 
-    var source = Marzipano.ImageUrlSource.fromString(
+  let scenes = data.scenes.map(function (data) {
+    let urlPrefix = "tiles/";
+
+    let source = Marzipano.ImageUrlSource.fromString(
       urlPrefix + data.id + ".JPG");
     //  { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
-    var geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
-    var initialViewParameters = {
+    let geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
+    let initialViewParameters = {
       "pitch": 0,
       "yaw": 4,
       "fov": 1.5707963267948966
     };
-    var limiter = Marzipano.RectilinearView.limit.traditional(data.faceSize, 100 * Math.PI / 180, 120 * Math.PI / 180);
-    var view = new Marzipano.RectilinearView(initialViewParameters, limiter);
+    let limiter = Marzipano.RectilinearView.limit.traditional(data.faceSize, 100 * Math.PI / 180, 120 * Math.PI / 180);
+    let view = new Marzipano.RectilinearView(initialViewParameters, limiter);
 
-    var scene = viewer.createScene({
+    let scene = viewer.createScene({
       source: source,
       geometry: geometry,
       view: view,
       pinFirstLevel: true,
     });
 
-    data.linkHotspots.forEach(function(hotspot) {
-      var element = createLinkHotspotElement(hotspot);
+    data.linkHotspots.forEach(function (hotspot) {
+      let element = createLinkHotspotElement(hotspot);
       scene.hotspotContainer().createHotspot(element, { yaw: hotspot.yaw, pitch: hotspot.pitch });
     });
     return {
@@ -158,7 +158,7 @@ const onbeforeunload = () => {
   });
 
   // Set up autorotate, if enabled.
-  var autorotate = Marzipano.autorotate({
+  let autorotate = Marzipano.autorotate({
     yawSpeed: 0.03,
     targetPitch: 0,
     targetFov: Math.PI / 2
@@ -192,29 +192,29 @@ const onbeforeunload = () => {
   if (!document.body.classList.contains('mobile')) {
     showSceneList();
   }
-  
-    // Dynamic parameters for controls.
-    var velocity = 0.7;
-    var friction = 3;
-  // DOM elements for view controls.
-  var viewUpElement = document.querySelector('#viewUp');
-  var viewDownElement = document.querySelector('#viewDown');
-  var viewLeftElement = document.querySelector('#viewLeft');
-  var viewRightElement = document.querySelector('#viewRight');
 
-  var controls = viewer.controls();
-  controls.registerMethod('upElement',    new Marzipano.ElementPressControlMethod(viewUpElement,     'y', -velocity, friction), true);
-  controls.registerMethod('downElement',  new Marzipano.ElementPressControlMethod(viewDownElement,   'y',  velocity, friction), true);
-  controls.registerMethod('leftElement',  new Marzipano.ElementPressControlMethod(viewLeftElement,   'x', -velocity, friction), true);
-  controls.registerMethod('rightElement', new Marzipano.ElementPressControlMethod(viewRightElement,  'x',  velocity, friction), true);
+  // Dynamic parameters for controls.
+  let velocity = 0.7;
+  let friction = 3;
+  // DOM elements for view controls.
+  let viewUpElement = document.querySelector('#viewUp');
+  let viewDownElement = document.querySelector('#viewDown');
+  let viewLeftElement = document.querySelector('#viewLeft');
+  let viewRightElement = document.querySelector('#viewRight');
+
+  let controls = viewer.controls();
+  controls.registerMethod('upElement', new Marzipano.ElementPressControlMethod(viewUpElement, 'y', -velocity, friction), true);
+  controls.registerMethod('downElement', new Marzipano.ElementPressControlMethod(viewDownElement, 'y', velocity, friction), true);
+  controls.registerMethod('leftElement', new Marzipano.ElementPressControlMethod(viewLeftElement, 'x', -velocity, friction), true);
+  controls.registerMethod('rightElement', new Marzipano.ElementPressControlMethod(viewRightElement, 'x', velocity, friction), true);
 
   // Set handler for scene switch.
   scenes.forEach(function (scene) {
-    var listEl = document.querySelector('#sceneList .scene[data-id="' + scene.data.id + '"]');
+    let listEl = document.querySelector('#sceneList .scene[data-id="' + scene.data.id + '"]');
     listEl.addEventListener('click', function () {
       switchScene(scene);
     });
-    var mapEl = document.querySelector('#mapDiv .scene[data-id="' + scene.data.id + '"]');
+    let mapEl = document.querySelector('#mapDiv .scene[data-id="' + scene.data.id + '"]');
     mapEl.addEventListener('click', function () {
       switchScene(scene);
     });
@@ -226,7 +226,7 @@ const onbeforeunload = () => {
 
 
   arrowDiv.addEventListener('click', function () {
-    var arrow = document.getElementById('arrow');
+    let arrow = document.getElementById('arrow');
     if (mapContainer.style.height == '60px' || mapContainer.style.height == '') {
       arrowDiv.style.backgroundColor = "rgba(58,68,84,0.8)";
       mapContainer.style.height = '500px';
@@ -250,16 +250,12 @@ const onbeforeunload = () => {
   }, false);
   arrowDiv.click();
 
-  var velocity = 0.7;
-  var friction = 3;
-
-
   function sanitize(s) {
     return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;');
   }
 
   function switchScene(scene) {
-    keyboardList = document.getElementById("keyboardList");
+    let keyboardList = document.getElementById("keyboardList");
     if (keyboardList != null) {
       keyboardPlace.removeChild(keyboardList);
     }
@@ -269,8 +265,8 @@ const onbeforeunload = () => {
     startAutorotate();
     updateSceneName(scene);
     updateSceneList(scene);
-    var keyboardList = document.createElement("ul");
-    listOfLinkHotspots[scene.data.index-1].forEach((element, index) => {
+    keyboardList = document.createElement("ul");
+    listOfLinkHotspots[scene.data.index - 1].forEach((element, index) => {
       keyboardList.appendChild(createKeyboardElement(element, index));
     });
 
@@ -283,8 +279,8 @@ const onbeforeunload = () => {
   }
 
   function updateSceneList(scene) {
-    for (var i = 0; i < sceneElements.length; i++) {
-      var el = sceneElements[i];
+    for (let i = 0; i < sceneElements.length; i++) {
+      let el = sceneElements[i];
       if (el.getAttribute('data-id') === scene.data.id) {
         el.classList.add('current');
       } else {
@@ -296,41 +292,41 @@ const onbeforeunload = () => {
   function createLinkHotspotElement(hotspot) {
 
     // Create wrapper element to hold icon and tooltip.
-    var wrapper = document.createElement('div');
-    wrapper.classList.add('hotspot');
-    wrapper.classList.add('link-hotspot');
+    let wrapperLink = document.createElement('div');
+    wrapperLink.classList.add('hotspot');
+    wrapperLink.classList.add('link-hotspot');
 
     // Create image element.
-    var icon = document.createElement('img');
+    let icon = document.createElement('img');
     icon.src = 'img/link.png';
     icon.classList.add('link-hotspot-icon');
 
     // Set rotation transform.
-    var transformProperties = [ '-ms-transform', '-webkit-transform', 'transform' ];
-    for (var i = 0; i < transformProperties.length; i++) {
-      var property = transformProperties[i];
+    let transformProperties = ['-ms-transform', '-webkit-transform', 'transform'];
+    for (let i = 0; i < transformProperties.length; i++) {
+      let property = transformProperties[i];
       icon.style[property] = 'rotate(' + 0 + 'rad)';
     }
 
     // Add click event handler.
-    wrapper.addEventListener('click', function() {
+    wrapperLink.addEventListener('click', function () {
       switchScene(findSceneById(hotspot.target));
     });
 
     // Prevent touch and scroll events from reaching the parent element.
     // This prevents the view control logic from interfering with the hotspot.
-    stopTouchAndScrollEventPropagation(wrapper);
+    stopTouchAndScrollEventPropagation(wrapperLink);
 
     // Create tooltip element.
-    var tooltip = document.createElement('div');
+    let tooltip = document.createElement('div');
     tooltip.classList.add('hotspot-tooltip');
     tooltip.classList.add('link-hotspot-tooltip');
     tooltip.innerHTML = findSceneDataById(hotspot.target).name;
 
-    wrapper.appendChild(icon);
-    wrapper.appendChild(tooltip);
+    wrapperLink.appendChild(icon);
+    wrapperLink.appendChild(tooltip);
 
-    return wrapper;
+    return wrapperLink;
   }
 
   function showSceneList() {
@@ -373,11 +369,11 @@ const onbeforeunload = () => {
 
   function createKeyboardElement(element, index) {
     // Create wrapper element to hold icon and tooltip.
-    var wrapper = document.createElement('li');
+    let wrapper = document.createElement('li');
     //wrapper.setAttribute("role", "button;");
 
     // Create image element.
-    var icon = document.createElement('button');
+    let icon = document.createElement('button');
 
     icon.classList.add('keyboardItem');
     icon.classList.add('btn', 'btn-default', 'btn-circle', 'btn-lg');
@@ -395,17 +391,17 @@ const onbeforeunload = () => {
 
   // Prevent touch and scroll events from reaching the parent element.
   function stopTouchAndScrollEventPropagation(element, eventList) {
-    var eventList = ['touchstart', 'touchmove', 'touchend', 'touchcancel',
+    let eventList1 = ['touchstart', 'touchmove', 'touchend', 'touchcancel',
       'wheel', 'mousewheel'];
-    for (var i = 0; i < eventList.length; i++) {
-      element.addEventListener(eventList[i], function (event) {
+    for (let i = 0; i < eventList1.length; i++) {
+      element.addEventListener(eventList1[i], function (event) {
         event.stopPropagation();
       });
     }
   }
 
   function findSceneById(id) {
-    for (var i = 0; i < scenes.length; i++) {
+    for (let i = 0; i < scenes.length; i++) {
       if (scenes[i].data.id === id) {
         return scenes[i];
       }
@@ -414,7 +410,7 @@ const onbeforeunload = () => {
   }
 
   function findSceneDataById(id) {
-    for (var i = 0; i < data.scenes.length; i++) {
+    for (let i = 0; i < data.scenes.length; i++) {
       if (data.scenes[i].id === id) {
         return data.scenes[i];
       }
