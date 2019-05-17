@@ -2,7 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5e51ba28-1987-4355-9644-9235cc80e5d1" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/script/customOptionPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/script/customOptionPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/@types/node/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/@types/node/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/adm-zip/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/adm-zip/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/dialog/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/dialog/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/electron/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/electron/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/extract-zip/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/extract-zip/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/fresh/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/fresh/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/fs/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/fs/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/mime/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/mime/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/node-zip/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/node-zip/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/properties-reader/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/properties-reader/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/remote/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/remote/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/rimraf/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/rimraf/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/send/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/send/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/update/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/update/package.json" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -28,8 +41,8 @@
       <file leaf-file-name="customOptionPage.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/script/customOptionPage.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="630">
-              <caret line="167" column="51" selection-start-line="167" selection-start-column="51" selection-end-line="167" selection-end-column="51" />
+            <state relative-caret-position="1911">
+              <caret line="142" column="45" lean-forward="true" selection-start-line="142" selection-start-column="45" selection-end-line="142" selection-end-column="45" />
             </state>
           </provider>
         </entry>
@@ -110,11 +123,6 @@
               <item name="Marzipano_example" type="462c0819:PsiDirectoryNode" />
               <item name="script" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="Marzipano_example" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Marzipano_example" type="462c0819:PsiDirectoryNode" />
-              <item name="uploads" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -162,16 +170,15 @@
       <workItem from="1557676001293" duration="2916000" />
       <workItem from="1557852253401" duration="711000" />
       <workItem from="1558047192237" duration="382000" />
-      <workItem from="1558049240451" duration="3149000" />
+      <workItem from="1558049240451" duration="3154000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7158000" />
+    <option name="totallyTimeSpent" value="7163000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24954791" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -183,7 +190,7 @@
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.21641025" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.21641025" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -386,8 +393,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/script/customOptionPage.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="167" column="51" selection-start-line="167" selection-start-column="51" selection-end-line="167" selection-end-column="51" />
+        <state relative-caret-position="1911">
+          <caret line="142" column="45" lean-forward="true" selection-start-line="142" selection-start-column="45" selection-end-line="142" selection-end-column="45" />
         </state>
       </provider>
     </entry>
