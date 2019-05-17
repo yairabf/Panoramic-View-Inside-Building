@@ -7,7 +7,7 @@ const createBackground = () => {
     };
     let viewer = new Marzipano.Viewer(pano, viewerOpts);
 
-    let source = Marzipano.ImageUrlSource.fromString("img/background1.jpg");
+    let source = Marzipano.ImageUrlSource.fromString("img/background.jpg");
     //  { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
     let geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
 
