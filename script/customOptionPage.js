@@ -1,8 +1,6 @@
 const { dialog } = require('electron').remote;
 const remote = require('electron').remote;
 const main = remote.require("./main.js");
-const fs = require('fs');
-const path = require('path');
 
 
 const UPLOAD_FOLDER = __dirname + "/uploads/";
@@ -13,6 +11,7 @@ const modal = document.getElementById('myModal');
 const modalImg = document.getElementById("img01");
 const closePreviewModalBtn = document.getElementById("closePreviewModal");
 const mainPageButton = document.getElementById('backToMainPageCustom');
+const submitBtn = document.getElementById('submitBtn');
 
 
 const onbeforeunload = () => {
@@ -48,6 +47,7 @@ const missingInputDialog = () => {
 closePreviewModalBtn.onclick = function () {
     modal.style.display = "none";
 };
+
 
 
 mainPageButton.addEventListener('click', function () {
@@ -107,12 +107,9 @@ const addImagesToUl = async (scene, files) => {
             let image = document.createElement('img');
             image.classList.add('img-check');
             image.src = main.getUploadFolder() + files[i];
-            debugger;
             // Get the image and insert it inside the modal - use its "alt" text as a caption
             image.addEventListener('click', function () {
-                modal.style.display = "block";
-                // modal.removeChild(modalImg);  
-                // modalImg.removeChild         
+                modal.style.display = "block";       
                 removeModalChilds();
                 modalImg.src = createImageForPreviewModal(this.src);
 
@@ -179,32 +176,25 @@ const createUlForScene = (scene, files, index) => {
 }
 
 const createForm = async (scenes, files) => {
-    debugger;
     let prom = scenes.map((scene, index) => createUlForScene(scene, files, index));
     await Promise.all(prom);
-    let submitBtn = document.createElement('button');
-    submitBtn.setAttribute('id', 'submitBtn');
-    submitBtn.innerHTML = "Create View"
     submitBtn.addEventListener('click', async function () {
         if (validateForm(scenes)) {
-            await initData(scenes);
+            initData(scenes);
             await main.createDataFile(scenes);
             await main.cleanUploadFolder();
             main.openWindow("panoramicView");
         } else {
             missingInputDialog();
+            return;
         }
     });
-    scenesListsContainer.appendChild(submitBtn);
 }
 
 const createGallery = async () => {
-    debugger;
     let scenes = await main.readSences();
     let files = await main.loadImageFiles();
     createForm(scenes, files);
-    // let prom = scenes.map(initCurrentScene => (files));
-    // await Promise.all(prom);
 }
 
 createGallery();
