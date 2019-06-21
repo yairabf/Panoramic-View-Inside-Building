@@ -25,7 +25,7 @@ const initData = async (path) => {
     let scenes = await main.readSences();
     let files = await main.loadImageFiles();
     let prom = scenes.map(scene => initCurrentScene(scene, files));
-    await(prom);
+    await Promise.all(prom);
     main.cleanUploadFolder();
     await main.createDataFile(scenes);
     let win = remote.getCurrentWindow();
