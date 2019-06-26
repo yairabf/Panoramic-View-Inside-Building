@@ -5,7 +5,12 @@ var app = express();
 
 /* serves main page */
 app.get("/", function(req, res) {
-   res.sendfile('public/index.html')
+  fs.unlink(__dirname +'/public/style/map.JPEG', (err)=>{
+    if(err){
+        console.log("no map");
+    }
+  });
+  res.sendfile('public/index.html')
 });
 
  app.post("/user/add", function(req, res) { 
