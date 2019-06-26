@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style/style.css">
+
+    <title>Title</title>
+</head>
+<body>
+<div id="main" >
+    <div id="appHeader">
+            <h1 id="currentSceneName"></h1>
+    </div>
+    <div id="mapDivContain"class="zoomViewport">
+        <div id="mapDiv" class="zoomContainer"></div>
+    </div>
+    <div id="currentScene">
+        <div id="actionBtns">
+            <button id="startBtn" class="timeBtn actionBtn">Start Time</button>
+            <button id="endBtn" class="timeBtn actionBtn">End Time</button>
+            <button id="skipBtn" class="actionBtn">Skip</button>
+        </div>
+        
+    </div>
+</div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="script/jquery.zoomooz.min.js"></script>
+<script src="script/data.js"></script>
+<script src="script/script.js"></script>
+
+</body>
+</html>

@@ -1,32 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui"
+    />
+    <link rel="stylesheet" href="./style/style.css">
 
-    <title>Title</title>
 </head>
-<body>
-<div id="main" >
-    <div id="appHeader">
-            <h1 id="currentSceneName"></h1>
-    </div>
-    <div id="mapDivContain"class="zoomViewport">
-        <div id="mapDiv" class="zoomContainer"></div>
-    </div>
-    <div id="currentScene">
-        <div id="actionBtns">
-            <button id="startBtn" class="timeBtn actionBtn">Start Time</button>
-            <button id="endBtn" class="timeBtn actionBtn">End Time</button>
-            <button id="skipBtn" class="actionBtn">Skip</button>
-        </div>
-        
-    </div>
-</div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="jquery.zoomooz.min.js"></script>
-<script src="data.js"></script>
-<script src="script.js"></script>
 
+<body class="multiple-scenes">
+    <div id="mainPageContent">
+        <div>
+            <h1>Welcome to 360 panoramic building view</h1>
+            <form id="myForm" name="myForm" enctype="multipart/form-data" method="POST">
+                <input type="file" id="myFile" name="myFile">
+                <input id="uploadZip" type="submit" name="submit">
+            </form>
+        </div>
+    </div>
+    <script src="./script/upload.js"></script>
 </body>
+
 </html>
