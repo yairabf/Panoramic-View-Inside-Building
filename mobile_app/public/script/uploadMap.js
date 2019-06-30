@@ -6,7 +6,7 @@ form.addEventListener('submit', function(ev) {
     var oData = new FormData(form);
 
     var oReq = new XMLHttpRequest();
-    oReq.open('POST', "/myAction", true);
+    oReq.open('POST', "/uploadMap", true);
 
     oReq.onload = function(oEvent) {
         if (oReq.status == 200) {

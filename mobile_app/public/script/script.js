@@ -19,8 +19,8 @@ for (let i = 1; i <= data.scenes.length; i++) {
     aScene.setAttribute("data-duration","600");
    
     aScene.classList.add("mapBtn", "scene","zoomTarget");
-    aScene.style.top = (parseInt(data.scenes[i - 1].y.slice(0,data.scenes[i - 1].y.length-2)) * 2) + "px";
-    aScene.style.left = (parseInt(data.scenes[i - 1].x.slice(0,data.scenes[i - 1].x.length-2)) * 2) + "px";
+    aScene.style.top = (parseInt(data.scenes[i - 1].y.slice(0,data.scenes[i - 1].y.length-2)) * 2.2) + "px";
+    aScene.style.left = (parseInt(data.scenes[i - 1].x.slice(0,data.scenes[i - 1].x.length-2)) * 2.2) + "px";
     imageMap.appendChild(aScene);
 }
 

@@ -1,4 +1,5 @@
 var express = require("express");
+var fs = require('fs');
 var multer = require('multer');
 
 var app = express();
@@ -8,6 +9,12 @@ app.get("/", function(req, res) {
   fs.unlink(__dirname +'/public/style/map.JPEG', (err)=>{
     if(err){
         console.log("no map");
+    } else {
+      fs.unlink(__dirname +'/public/script/data.js', (err)=>{
+        if(err){
+          console.log("no data");
+        }
+      });
     }
   });
   res.sendfile('public/index.html')
@@ -29,7 +36,7 @@ app.listen(port, function() {
   console.log("Listening on " + port);
 });
 
-var storage = multer.diskStorage({
+var storageMap = multer.diskStorage({
   destination: function(req, file, callback) {
     console.log("upload");
     callback(null, './public/style');
@@ -39,10 +46,30 @@ var storage = multer.diskStorage({
   }
 });
 
-var upload = multer({storage: storage}).single('myFile');
+var storageData = multer.diskStorage({
+  destination: function(req, file, callback) {
+    console.log("upload");
+    callback(null, './public/script');
+  },
+  filename: function(req, file, callback) {
+    callback(null, file.originalname);
+  }
+});
 
-app.post('/myAction', function(req, res){
-  upload(req,res, function(err){
+var uploadMap = multer({storage: storageMap}).single('myFile');
+var uploadData = multer({storage: storageData}).single('myFile');
+
+app.post('/uploadMap', function(req, res){
+  uploadMap(req,res, function(err){
+    if(err){
+      return res.end("Error");
+    }
+    res.redirect('/uploadData.html');
+  });
+});
+
+app.post('/uploadData', function(req, res){
+  uploadData(req,res, function(err){
     if(err){
       return res.end("Error");
     }
