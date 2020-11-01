@@ -1,7 +1,9 @@
 # 360 Panoramic Project #
 This is application based on electron framework.
-By uploading 360 panoramic pictutre you can create a google map app to walk through the environment you pictured by using 360 camera. 
+By uploading 360 panoramic pictutre you can create a "google-map" app like, to walk through the environment you pictured by using 360 camera.
+
 This project is based on Marzipano library.
+
 This project has a demo folder for example, but for it to work for your own images you will need also using the mobile app.
 
 ## Installation ##
