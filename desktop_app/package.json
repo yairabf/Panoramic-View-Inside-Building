@@ -16,7 +16,7 @@
     "fs": "0.0.1-security",
     "mime": "^2.4.4",
     "node-zip": "^1.1.1",
-    "properties-reader": "0.0.16",
+    "properties-reader": "2.2.0",
     "remote": "^0.2.6",
     "rimraf": "^2.6.3",
     "send": "^0.16.2",
